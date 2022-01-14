@@ -1,17 +1,12 @@
 package ru.netology;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
@@ -32,10 +27,10 @@ public class CardDeliveryTest {
         $("[class='input__control'][placeholder='Город']").setValue("Вологда");
         $("[class='menu-item__control']").click();
         //заполняем поле дата
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, +3);
-        $("[class='input__control'][placeholder='Дата встречи']").setValue("cal.getTime()");
-        $("[class='calendar__day']").click();
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        $("[data-test-id='date'] input").click();
+        String newDate = LocalDate.now().plusDays(5).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[class='input__control'][placeholder='Дата встречи']").setValue(newDate);
         //заполняем поле имя и фамилия
         $("[class='input__control'][name='name']").setValue("Чебыкина Ксения");
         //заполняем поле телефон
@@ -223,13 +218,10 @@ public class CardDeliveryTest {
         //чистка поля с датой по умолчанию
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         //вводим дату
+        //кликаем по полю с датой
         $("[data-test-id='date'] input").click();
-
-        DateFormat dateFormat = new SimpleDateFormat("DD.MM.YYYY");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, -1);
-        String newDate = dateFormat.format(cal.getTime());
-
+        //вчитаем 7 дней из текущей даты
+        String newDate = LocalDate.now().minusDays(7).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         $("[data-test-id='date'] input").setValue(newDate);
         //заполняем поле имя и фамилия
         $("[class='input__control'][name='name']").setValue("Чебыкина Ксения");
